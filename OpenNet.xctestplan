@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "C0975ED1-B378-49D1-A352-40CF1E0180D5",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:OpenNet.xcodeproj",
+      "identifier" : "EAF8A6482F77B82700FFAC74",
+      "name" : "OpenNet"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:OpenNet.xcodeproj",
+        "identifier" : "EAF8A6552F77B82800FFAC74",
+        "name" : "OpenNetTests"
+      }
+    }
+  ],
+  "version" : 1
+}

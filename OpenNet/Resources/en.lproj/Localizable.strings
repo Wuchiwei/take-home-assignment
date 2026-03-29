@@ -1,0 +1,4 @@
+/* Connection status labels shown in the toolbar badge */
+"Idle" = "Idle";
+"Connected" = "Connected";
+"Reconnecting... (%lld)" = "Reconnecting... (%lld)";
