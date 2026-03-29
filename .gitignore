@@ -1,0 +1,10 @@
+### macOS ###
+# General
+.DS_Store
+
+### Xcode ###
+## User settings
+xcuserdata/
+
+### Claude Code ###
+.claude/
