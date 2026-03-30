@@ -352,6 +352,12 @@ A `CADisplayLink`-based FPS counter is displayed at the bottom-right corner in D
 
 All key views (`MatchListView`, `MatchRowView`, `OddsView`) include `Self._printChanges()` in DEBUG builds. This prints to the Xcode console whenever a view's body is re-evaluated, showing exactly which property triggered the re-render. This proves that odds updates only re-render the affected row, not the entire list.
 
+### Memory Leak Testing
+
+Verified with Xcode Memory Graph Debugger — no leaks detected during WebSocket reconnection cycles and odds update streaming.
+
+![Leak Test](Profile/profile-leak.png)
+
 ---
 
 ## Project Structure
