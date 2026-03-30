@@ -340,13 +340,13 @@ actor MatchRepository {
 
 When re-entering the match list (e.g., reopening the page), `load()` returns cached data instantly — no loading spinner, no API call. The cache also reflects real-time WebSocket updates via `applyUpdate()`, so the user sees the latest odds immediately without waiting for a network round-trip.
 
-The current implementation uses in-memory cache with a configurable TTL (default 5 minutes). For scenarios requiring persistence across app launches, this could be extended to `UserDefaults` (for small data sets) or the file system / Core Data (for larger data sets), with the same `MatchRepositoryProtocol` interface — callers would not need to change.
+The current implementation uses in-memory cache with a configurable TTL (default 5 minutes). For scenarios requiring persistence across app launches, this could be extended to `UserDefaults` (for small data sets) or the file system (for larger data sets), with the same `MatchRepositoryProtocol` interface — callers would not need to change. Core Data or SQL-based solutions would only be considered if the data requires complex querying or filtering.
 
-**UIKit / Combine alternative:** Same repository pattern works. In UIKit, the ViewController would call `repository.load()` in `viewWillAppear` and populate the `UITableView` from the cache synchronously if available.
+**UIKit / Combine alternative:** Same repository pattern works. In UIKit, the ViewController would call `repository.load()` in `viewDidLoad` and populate the `UITableView` from the cache synchronously if available.
 
 ### Memory Leak Testing
 
-Verified with Xcode Memory Graph Debugger — no leaks detected during WebSocket reconnection cycles and odds update streaming.
+Verified with Instruments Leaks — no leaks detected during WebSocket reconnection cycles and odds update streaming.
 
 ![Leak Test](Profile/profile-leak.png)
 
@@ -437,14 +437,14 @@ OpenNet/
 
 ## Testing
 
-50 unit tests covering:
+56 unit tests covering:
 
 | Test Suite | Count | Coverage |
 |------------|-------|----------|
-| `MatchListReducerTests` | 22 | All state transitions: startLoading, dataLoaded, dataFailed, enterBackground, becomeActive, WebSocket events (connect, disconnect, odds update), matchTapped |
-| `MatchRepositoryTests` | 11 | Cache hit/miss/expiry, forceLoad, applyUpdate, error propagation |
+| `MatchListReducerTests` | 24 | All state transitions: startLoading, dataLoaded, dataFailed, enterBackground, becomeActive, WebSocket events (connect, disconnect, consecutive reconnect, odds update), matchTapped |
+| `MatchRepositoryTests` | 13 | Cache hit/miss/expiry, forceLoad (including cache update), applyUpdate (including cache validity), error propagation |
 | `MatchRowViewModelTests` | 11 | Init, formatting, applyUpdate, Equatable |
-| `MatchListViewModelTests` | 6 | Integration: start (success/failure), refresh, enterBackground, navigation, odds update propagation |
+| `MatchListViewModelTests` | 8 | Integration: start (success/failure), refresh, enterBackground, becomeActive reconnect, retry after error, navigation, odds update propagation |
 
 ---
 
