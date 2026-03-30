@@ -172,6 +172,24 @@ When the view disappears, `.task` cancels the underlying `Task`, which propagate
 
 ---
 
+## Network Resilience (Not Yet Implemented)
+
+The current mock layer simulates a happy-path network. A production `URLSessionAPIClient` should additionally handle:
+
+| Concern | Approach |
+|---------|----------|
+| **Offline detection** | `NWPathMonitor` to observe connectivity changes and fail fast or queue requests when offline |
+| **Request timeout** | `URLSessionConfiguration.timeoutIntervalForRequest` to avoid hanging requests |
+| **Retry on transient failure** | Exponential backoff for 5xx / timeout errors, with a max retry count to avoid infinite loops |
+| **SSL pinning** | Prevent MITM attacks on sensitive odds data |
+| **Auth token refresh** | Intercept 401, refresh token, retry original request |
+| **HTTP conditional requests** | `ETag` / `If-Modified-Since` to reduce bandwidth alongside in-memory cache |
+| **Rate limiting** | Handle 429 responses with `Retry-After` |
+
+The WebSocket layer already handles reconnection with exponential backoff (see [WebSocket Auto-Reconnect](#websocket-auto-reconnect)). The REST API layer does not yet have equivalent resilience.
+
+---
+
 ## Thread Safety
 
 ### `@MainActor` for ViewModels
@@ -271,7 +289,7 @@ Each match row has its own `@Observable` ViewModel. When a WebSocket update arri
 2. Mutate only that row's `teamAOdds` / `teamBOdds`
 3. SwiftUI re-renders only the affected row — not the entire list
 
-With 100 matches and up to 10 updates/second, the dictionary avoids 100,000 comparisons/second that `Array.first(where:)` would require.
+With 100 matches and up to 10 updates/second, the dictionary avoids 1,000 comparisons/second that `Array.first(where:)` would require.
 
 **UIKit alternative:** Compare the incoming matchID against the data source to find the corresponding `IndexPath`, then use `tableView.cellForRow(at:)` to get the visible cell and directly update its labels — no `reloadRows` or `reloadData` needed. This is the most efficient approach: zero diffing overhead, zero cell recreation, just a direct property assignment on the existing `UILabel`. Alternatively, `UITableViewDiffableDataSource` with `NSDiffableDataSourceSnapshot` can handle batch updates and insertions/deletions automatically.
 

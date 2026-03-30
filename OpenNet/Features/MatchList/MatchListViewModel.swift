@@ -10,7 +10,8 @@ enum MatchListViewState: Equatable {
         switch (lhs, rhs) {
         case (.loading, .loading): return true
         case (.error(let a), .error(let b)): return a == b
-        case (.loaded(let a), .loaded(let b)): return a == b
+        case (.loaded(let a), .loaded(let b)):
+            return a.count == b.count && zip(a, b).allSatisfy { $0 === $1 }
         default: return false
         }
     }

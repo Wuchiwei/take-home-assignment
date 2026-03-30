@@ -163,7 +163,12 @@ struct MatchRowViewModelTests {
         let b = makeSUT(matchID: 1, teamA: "Eagles", teamB: "Tigers", startTime: date, odds: odds)
 
         // Then
-        #expect(a == b)
+        #expect(a.id == b.id)
+        #expect(a.teamA == b.teamA)
+        #expect(a.teamB == b.teamB)
+        #expect(a.startTime == b.startTime)
+        #expect(a.teamAOdds == b.teamAOdds)
+        #expect(a.teamBOdds == b.teamBOdds)
     }
 
     @Test func equality_differentOdds_areNotEqual() {
@@ -175,6 +180,6 @@ struct MatchRowViewModelTests {
         let b = makeSUT(matchID: 1, startTime: date, odds: MatchOdds(matchID: 1, teamAOdds: 1.8, teamBOdds: 2.3))
 
         // Then
-        #expect(a != b)
+        #expect(a.teamAOdds != b.teamAOdds)
     }
 }

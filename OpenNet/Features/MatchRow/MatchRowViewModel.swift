@@ -2,16 +2,8 @@ import Foundation
 import Observation
 
 @Observable
-final class MatchRowViewModel: Identifiable, Equatable {
-    static func == (lhs: MatchRowViewModel, rhs: MatchRowViewModel) -> Bool {
-        lhs.id == rhs.id
-            && lhs.teamA == rhs.teamA
-            && lhs.teamB == rhs.teamB
-            && lhs.startTime == rhs.startTime
-            && lhs.teamAOdds == rhs.teamAOdds
-            && lhs.teamBOdds == rhs.teamBOdds
-    }
-
+@MainActor
+final class MatchRowViewModel: Identifiable {
     let id: Int
     let match: Match
     let teamA: String
