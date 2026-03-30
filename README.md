@@ -189,8 +189,10 @@ All ViewModel state mutations are isolated to `@MainActor`. The compiler enforce
 - No runtime locks, no `DispatchQueue.main.async` wrappers, no data races
 
 **UIKit / Combine alternative:**
-- `DispatchQueue` + locks — manual thread safety with no compile-time verification
 - Combine's `receive(on: DispatchQueue.main)` — runtime guarantee, easy to forget on one publisher chain
+- `DispatchQueue.main.async` — ensure UI updates run on the main thread, but no compile-time enforcement; forgetting to dispatch is a silent bug that only manifests as a runtime crash
+
+**GCD alternative:** Use a serial `DispatchQueue` as a synchronization mechanism — all ViewModel state reads and writes go through `queue.sync { }` or `queue.async { }`. This provides runtime isolation but the compiler cannot verify correctness. Alternatively, use `NSLock` for fine-grained locking, but it's error-prone (deadlocks, forgotten unlocks) and verbose compared to `@MainActor`.
 
 ### `actor` for MatchRepository
 
@@ -206,9 +208,11 @@ actor MatchRepository: MatchRepositoryProtocol {
 
 **Why `actor` over `@MainActor`?** Repository work (fetching, caching) doesn't need to run on the main thread. `actor` keeps it on the cooperative thread pool, freeing the main thread for UI work.
 
-**UIKit / Combine alternative:**
-- `NSLock` around mutable state — error-prone, no compile-time checks
-- Serial `DispatchQueue` — runtime isolation, but easy to bypass by accessing properties directly
+**GCD alternative:** Use a concurrent `DispatchQueue` with the reader-writer pattern — reads execute concurrently via `queue.sync { }`, writes are serialized via `queue.async(flags: .barrier) { }`. This allows multiple concurrent reads while ensuring writes have exclusive access, preventing race conditions. However, it's a runtime-only guarantee with no compile-time safety, and forgetting to wrap an access in the queue is a silent data race.
+
+**Other alternatives:**
+- `NSLock` — fine-grained but error-prone (deadlocks, forgotten unlocks)
+- Serial `DispatchQueue` — simpler than reader-writer but serializes all access including reads, reducing concurrency
 
 ---
 
