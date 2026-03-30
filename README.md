@@ -2,6 +2,11 @@
 
 A SwiftUI application that displays real-time sports match odds with WebSocket updates, built as an iOS take-home assignment.
 
+## Requirements
+
+- Xcode 26.3
+- iOS 26+
+
 ## Demo Video
 
 [Demo Video](https://drive.google.com/file/d/1bfy5dcxo2bWbHvg26qxqQTCE44HI-E1C/view?usp=drive_link)
@@ -329,7 +334,7 @@ actor MatchRepository {
 }
 ```
 
-When navigating back from MatchDetail, `load()` returns cached data instantly — no loading spinner, no API call. The cache also reflects real-time WebSocket updates via `applyUpdate()`, so the user sees the latest odds immediately upon return.
+When re-entering the match list (e.g., reopening the page), `load()` returns cached data instantly — no loading spinner, no API call. The cache also reflects real-time WebSocket updates via `applyUpdate()`, so the user sees the latest odds immediately without waiting for a network round-trip.
 
 The current implementation uses in-memory cache with a configurable TTL (default 5 minutes). For scenarios requiring persistence across app launches, this could be extended to `UserDefaults` (for small data sets) or the file system / Core Data (for larger data sets), with the same `MatchRepositoryProtocol` interface — callers would not need to change.
 
